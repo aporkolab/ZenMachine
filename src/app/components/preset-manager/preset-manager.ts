@@ -22,7 +22,7 @@ import { Preset, PresetService } from '../../services/preset';
     MatIconModule,
   ],
   templateUrl: './preset-manager.html',
-  styleUrls: ['./preset-manager.scss']
+  styleUrls: ['./preset-manager.scss'],
 })
 export class PresetManagerComponent {
   private presetService = inject(PresetService);

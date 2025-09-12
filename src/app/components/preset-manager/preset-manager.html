@@ -3,7 +3,7 @@
   <div class="save-preset-form">
     <mat-form-field>
       <mat-label>New Preset Name</mat-label>
-      <input matInput [(ngModel)]="newPresetName">
+      <input matInput [(ngModel)]="newPresetName" />
     </mat-form-field>
     <button mat-raised-button color="primary" (click)="savePreset()" [disabled]="!newPresetName">
       Save Preset

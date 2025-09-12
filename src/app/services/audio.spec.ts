@@ -10,7 +10,7 @@ describe('AudioService', () => {
     // Create a chainable connect mock
     const createConnectable = () => {
       const connectable = {
-        connect: jasmine.createSpy('connect')
+        connect: jasmine.createSpy('connect'),
       };
       connectable.connect.and.returnValue(connectable);
       return connectable;
@@ -20,7 +20,7 @@ describe('AudioService', () => {
     const mockAudioContext = {
       createGain: jasmine.createSpy('createGain').and.returnValue({
         ...createConnectable(),
-        gain: { value: 1 }
+        gain: { value: 1 },
       }),
       createAnalyser: jasmine.createSpy('createAnalyser').and.returnValue(createConnectable()),
       createBufferSource: jasmine.createSpy('createBufferSource').and.returnValue({
@@ -28,47 +28,34 @@ describe('AudioService', () => {
         start: jasmine.createSpy('start'),
         buffer: null,
         loop: false,
-        playbackRate: { value: 1 }
+        playbackRate: { value: 1 },
       }),
       decodeAudioData: jasmine.createSpy('decodeAudioData').and.returnValue(Promise.resolve({})),
       destination: {},
       state: 'running',
-      resume: jasmine.createSpy('resume').and.returnValue(Promise.resolve())
+      resume: jasmine.createSpy('resume').and.returnValue(Promise.resolve()),
     };
 
     const mockBiquadFilterNode = jasmine.createSpy('BiquadFilterNode').and.returnValue({
       ...createConnectable(),
-      gain: { value: 0 }
+      gain: { value: 0 },
     });
 
     const mockStereoPannerNode = jasmine.createSpy('StereoPannerNode').and.returnValue({
       ...createConnectable(),
       disconnect: jasmine.createSpy('disconnect'),
-      pan: { value: 0 }
+      pan: { value: 0 },
     });
 
-    (globalThis as typeof globalThis & {
-      AudioContext?: typeof AudioContext;
-      BiquadFilterNode?: typeof BiquadFilterNode;
-      StereoPannerNode?: typeof StereoPannerNode;
-      Audio?: typeof Audio;
-    }).AudioContext = jasmine.createSpy('AudioContext').and.returnValue(mockAudioContext);
-    (globalThis as typeof globalThis & {
-      BiquadFilterNode?: typeof BiquadFilterNode;
-    }).BiquadFilterNode = mockBiquadFilterNode;
-    (globalThis as typeof globalThis & {
-      StereoPannerNode?: typeof StereoPannerNode;
-    }).StereoPannerNode = mockStereoPannerNode;
-    (globalThis as typeof globalThis & {
-      Audio?: typeof Audio;
-    }).Audio = jasmine.createSpy('Audio').and.returnValue({
-      load: jasmine.createSpy('load')
+    (globalThis as any).AudioContext = jasmine.createSpy('AudioContext').and.returnValue(mockAudioContext);
+    (globalThis as any).BiquadFilterNode = mockBiquadFilterNode;
+    (globalThis as any).StereoPannerNode = mockStereoPannerNode;
+    (globalThis as any).Audio = jasmine.createSpy('Audio').and.returnValue({
+      load: jasmine.createSpy('load'),
     });
 
     TestBed.configureTestingModule({
-      providers: [
-        { provide: PLATFORM_ID, useValue: 'browser' }
-      ]
+      providers: [{ provide: PLATFORM_ID, useValue: 'browser' }],
     });
     service = TestBed.inject(AudioService);
   });
@@ -79,11 +66,11 @@ describe('AudioService', () => {
 
   it('should have an audio context after init', () => {
     service.init();
-    expect((service as AudioService & { ctx?: AudioContext }).ctx).toBeDefined();
+    expect((service as any).ctx).toBeDefined();
   });
 
   it('should have a master gain node after init', () => {
     service.init();
-    expect((service as AudioService & { masterGainNode?: GainNode }).masterGainNode).toBeDefined();
+    expect((service as any).masterGainNode).toBeDefined();
   });
 });

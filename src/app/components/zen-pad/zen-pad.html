@@ -97,18 +97,17 @@
       </div>
 
       <div class="slider-container">
-        <mat-form-field>
-          <mat-label>Playback Rate</mat-label>
-          <mat-slider [min]="0.5" [max]="2" [step]="0.1">
-            <input
-              matSliderThumb
-              name="playbackRate"
-              [ngModelOptions]="{ standalone: true }"
-              [ngModel]="playbackRate"
-              (ngModelChange)="playbackRate = $event; audioService.setPlaybackRate($event)"
-            />
-          </mat-slider>
-        </mat-form-field>
+        <label for="playbackRate">Playback Rate</label>
+        <mat-slider [min]="0.5" [max]="2" [step]="0.1">
+          <input
+            matSliderThumb
+            id="playbackRate"
+            name="playbackRate"
+            [ngModelOptions]="{ standalone: true }"
+            [ngModel]="playbackRate"
+            (ngModelChange)="playbackRate = $event; audioService.setPlaybackRate($event)"
+          />
+        </mat-slider>
       </div>
     </mat-card-content>
   </mat-card>

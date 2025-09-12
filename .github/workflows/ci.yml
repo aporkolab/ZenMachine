@@ -88,7 +88,7 @@ jobs:
       
       - name: Run unit tests
         if: matrix.test-type == 'unit'
-        run: npm run test:unit -- --coverage --watch=false --browsers=ChromeHeadless
+        run: npm run test:unit -- --browsers=ChromeHeadless
       
       - name: Run integration tests
         if: matrix.test-type == 'integration'

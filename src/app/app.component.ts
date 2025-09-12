@@ -8,7 +8,6 @@ import { FooterComponent } from './components/footer/footer';
   standalone: true,
   imports: [RouterOutlet, ZenPadComponent, FooterComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
-export class AppComponent {
-}
+export class AppComponent {}

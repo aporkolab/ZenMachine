@@ -11,9 +11,8 @@ describe('ZenPadComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ZenPadComponent, NoopAnimationsModule, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [ZenPadComponent, NoopAnimationsModule, HttpClientTestingModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(ZenPadComponent);
     component = fixture.componentInstance;
@@ -26,7 +25,9 @@ describe('ZenPadComponent', () => {
   });
 
   it('should call audioService.loadSound and audioService.playSound when addSound is called', async () => {
-    const loadSoundSpy = spyOn(audioService, 'loadSound').and.returnValue(Promise.resolve({} as AudioBuffer));
+    const loadSoundSpy = spyOn(audioService, 'loadSound').and.returnValue(
+      Promise.resolve({} as AudioBuffer),
+    );
     const playSoundSpy = spyOn(audioService, 'playSound');
 
     component.selectedSoundPath = 'assets/sounds/heavy-rain.mp3';
@@ -35,7 +36,6 @@ describe('ZenPadComponent', () => {
     expect(loadSoundSpy).toHaveBeenCalledWith('assets/sounds/heavy-rain.mp3');
     expect(playSoundSpy).toHaveBeenCalled();
   });
-
 
   it('should set the background image when changeBackground is called with a path', () => {
     component.selectedBackground = 'assets/image/beach.jpg';

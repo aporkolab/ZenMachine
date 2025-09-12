@@ -1,13 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { ZenPad } from './components/zen-pad/zen-pad';
+import { ZenPadComponent } from './components/zen-pad/zen-pad';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('AppComponent', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AppComponent, ZenPad, NoopAnimationsModule, HttpClientTestingModule],
+      imports: [AppComponent, ZenPadComponent, NoopAnimationsModule, HttpClientTestingModule],
     }).compileComponents();
   });
 

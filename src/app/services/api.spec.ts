@@ -9,7 +9,7 @@ describe('ApiService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [ApiService]
+      providers: [ApiService],
     });
     service = TestBed.inject(ApiService);
     httpMock = TestBed.inject(HttpTestingController);
@@ -27,16 +27,16 @@ describe('ApiService', () => {
     const dummyResponse: JamendoResponse = {
       results: [
         { id: '1', name: 'Track 1', artist_name: 'Artist 1', audio: 'url1' },
-        { id: '2', name: 'Track 2', artist_name: 'Artist 2', audio: 'url2' }
-      ]
+        { id: '2', name: 'Track 2', artist_name: 'Artist 2', audio: 'url2' },
+      ],
     };
 
-    service.getRamdomTracks().subscribe(response => {
+    service.getRamdomTracks().subscribe((response) => {
       expect(response.results.length).toBe(2);
       expect(response).toEqual(dummyResponse);
     });
 
-    const req = httpMock.expectOne(request => request.url.includes('api.jamendo.com'));
+    const req = httpMock.expectOne((request) => request.url.includes('api.jamendo.com'));
     expect(req.request.method).toBe('GET');
     req.flush(dummyResponse);
   });

@@ -11,9 +11,8 @@ describe('PresetManagerComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [PresetManagerComponent, NoopAnimationsModule, HttpClientTestingModule]
-    })
-    .compileComponents();
+      imports: [PresetManagerComponent, NoopAnimationsModule, HttpClientTestingModule],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(PresetManagerComponent);
     component = fixture.componentInstance;

@@ -84,7 +84,7 @@ export class SecurityService {
     const originalAppendChild = Node.prototype.appendChild;
     const checkAllowedSource = this.isAllowedSource.bind(this);
     const reportViolation = this.reportSecurityViolation.bind(this);
-    
+
     Node.prototype.appendChild = function <T extends Node>(this: Node, node: T): T {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as unknown as Element;
@@ -134,11 +134,12 @@ export class SecurityService {
     window.fetch = async (...args): Promise<Response> => {
       const now = Date.now();
       requestTimes.push(now);
-      
+
       // Clean old requests outside the time window
-      requestTimes = requestTimes.filter(time => now - time < requestTimeWindow);
-      
-      if (requestTimes.length > 100) { // More than 100 requests per minute
+      requestTimes = requestTimes.filter((time) => now - time < requestTimeWindow);
+
+      if (requestTimes.length > 100) {
+        // More than 100 requests per minute
         this.reportSecurityViolation({
           type: 'suspicious-activity',
           severity: 'high',
@@ -149,7 +150,7 @@ export class SecurityService {
           url: window.location.href,
         });
       }
-      
+
       return originalFetch.apply(this, args);
     };
   }
@@ -235,9 +236,9 @@ export class SecurityService {
     try {
       const url = new URL(src, window.location.origin);
       const domain = url.hostname + (url.port ? `:${url.port}` : '');
-      
-      return this.config.allowedDomains.some(allowedDomain => 
-        domain === allowedDomain || domain.endsWith(`.${allowedDomain}`)
+
+      return this.config.allowedDomains.some(
+        (allowedDomain) => domain === allowedDomain || domain.endsWith(`.${allowedDomain}`),
       );
     } catch {
       return false;
@@ -246,7 +247,7 @@ export class SecurityService {
 
   private reportSecurityViolation(violation: SecurityViolation) {
     console.warn('Security violation detected:', violation);
-    
+
     // Report to monitoring service
     this.monitoring.logError({
       message: `[SECURITY] ${violation.message}`,
@@ -271,13 +272,13 @@ export class SecurityService {
 
   private handleCriticalViolation(violation: SecurityViolation) {
     console.error('CRITICAL SECURITY VIOLATION:', violation);
-    
+
     // In a real application, you might:
     // 1. Lock the user session
     // 2. Redirect to a safe page
     // 3. Clear sensitive data
     // 4. Send immediate alert to security team
-    
+
     this.monitoring.trackEvent('critical_security_event', {
       type: violation.type,
       message: violation.message,
@@ -289,7 +290,7 @@ export class SecurityService {
   checkURLSafety(url: string): boolean {
     try {
       const parsedUrl = new URL(url);
-      
+
       // Block dangerous protocols
       const dangerousProtocols = ['javascript:', 'data:', 'vbscript:'];
       if (dangerousProtocols.includes(parsedUrl.protocol)) {
@@ -330,7 +331,7 @@ export class SecurityService {
       "object-src 'none'",
       "base-uri 'self'",
       "form-action 'self'",
-      "upgrade-insecure-requests",
+      'upgrade-insecure-requests',
     ];
 
     return directives.join('; ');
@@ -340,10 +341,10 @@ export class SecurityService {
   checkRateLimit(action: string, maxAttempts: number = 10, windowMs: number = 60000): boolean {
     const key = `rate_limit_${action}`;
     const now = Date.now();
-    
+
     let attempts = JSON.parse(localStorage.getItem(key) || '[]') as number[];
-    attempts = attempts.filter(timestamp => now - timestamp < windowMs);
-    
+    attempts = attempts.filter((timestamp) => now - timestamp < windowMs);
+
     if (attempts.length >= maxAttempts) {
       this.reportSecurityViolation({
         type: 'suspicious-activity',

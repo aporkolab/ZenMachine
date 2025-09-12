@@ -12,28 +12,29 @@ describe('VisualizerComponent', () => {
   beforeEach(async () => {
     // Create mock AudioService
     mockAudioService = jasmine.createSpyObj('AudioService', ['getAnalyser']);
-    
+
     // Mock AnalyserNode with getByteFrequencyData
     const mockAnalyser = {
       frequencyBinCount: 128,
-      getByteFrequencyData: jasmine.createSpy('getByteFrequencyData').and.callFake((array: Uint8Array) => {
-        // Fill with some mock data
-        for (let i = 0; i < array.length; i++) {
-          array[i] = Math.floor(Math.random() * 255);
-        }
-      })
+      getByteFrequencyData: jasmine
+        .createSpy('getByteFrequencyData')
+        .and.callFake((array: Uint8Array) => {
+          // Fill with some mock data
+          for (let i = 0; i < array.length; i++) {
+            array[i] = Math.floor(Math.random() * 255);
+          }
+        }),
     };
-    
-    mockAudioService.getAnalyser.and.returnValue(mockAnalyser as AnalyserNode);
+
+    mockAudioService.getAnalyser.and.returnValue(mockAnalyser as unknown as AnalyserNode);
 
     await TestBed.configureTestingModule({
       imports: [VisualizerComponent],
       providers: [
         { provide: AudioService, useValue: mockAudioService },
-        { provide: PLATFORM_ID, useValue: 'browser' }
-      ]
-    })
-    .compileComponents();
+        { provide: PLATFORM_ID, useValue: 'browser' },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(VisualizerComponent);
     component = fixture.componentInstance;

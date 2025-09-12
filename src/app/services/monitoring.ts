@@ -96,11 +96,16 @@ export class MonitoringService {
     // Track page load performance
     window.addEventListener('load', () => {
       setTimeout(() => {
-        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-        
+        const navigation = performance.getEntriesByType(
+          'navigation',
+        )[0] as PerformanceNavigationTiming;
+
         if (navigation) {
           this.trackMetric('page_load_time', navigation.loadEventEnd - navigation.fetchStart);
-          this.trackMetric('dom_content_loaded', navigation.domContentLoadedEventEnd - navigation.fetchStart);
+          this.trackMetric(
+            'dom_content_loaded',
+            navigation.domContentLoadedEventEnd - navigation.fetchStart,
+          );
           this.trackMetric('first_contentful_paint', this.getFirstContentfulPaint());
         }
       }, 0);
@@ -112,14 +117,14 @@ export class MonitoringService {
 
   private getFirstContentfulPaint(): number {
     const paintEntries = performance.getEntriesByType('paint');
-    const fcpEntry = paintEntries.find(entry => entry.name === 'first-contentful-paint');
+    const fcpEntry = paintEntries.find((entry) => entry.name === 'first-contentful-paint');
     return fcpEntry?.startTime || 0;
   }
 
   private trackWebVitals() {
     // This would integrate with web-vitals library in a real implementation
     // For now, we'll track basic metrics
-    
+
     // Track Largest Contentful Paint (LCP)
     if ('LargestContentfulPaint' in window) {
       new PerformanceObserver((list) => {
@@ -204,11 +209,7 @@ export class MonitoringService {
   }
 
   private async flushQueues() {
-    await Promise.all([
-      this.flushErrors(),
-      this.flushMetrics(),
-      this.flushAnalytics(),
-    ]);
+    await Promise.all([this.flushErrors(), this.flushMetrics(), this.flushAnalytics()]);
   }
 
   private async flushErrors() {
@@ -259,7 +260,7 @@ export class MonitoringService {
   private async sendToMonitoringService(endpoint: string, data: unknown[]) {
     // In a real implementation, you would send to your actual monitoring service
     console.log(`Sending ${data.length} items to ${endpoint}:`, data);
-    
+
     // Example implementation:
     /*
     const response = await fetch(endpoint, {
@@ -291,7 +292,7 @@ export class MonitoringService {
     if (this.isBrowser) {
       performance.mark(`${name}-end`);
       performance.measure(name, `${name}-start`, `${name}-end`);
-      
+
       const measure = performance.getEntriesByName(name, 'measure')[0];
       this.trackMetric(name, measure.duration);
     }
@@ -304,7 +305,7 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   handleError(error: Error): void {
     console.error('Global error:', error);
-    
+
     this.monitoringService.logError({
       message: error?.message || 'Unknown error',
       stack: error?.stack,
