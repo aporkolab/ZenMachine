@@ -1,5 +1,4 @@
 const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig.json');
 
 module.exports = {
   preset: 'jest-preset-angular',
@@ -15,9 +14,7 @@ module.exports = {
       },
     ],
   },
-  moduleNameMapping: pathsToModuleNameMapper(compilerOptions.paths || {}, {
-    prefix: '<rootDir>/',
-  }),
+  moduleNameMapper: {},
   testMatch: ['**/tests/integration/**/*.spec.ts'],
   collectCoverageFrom: [
     'src/**/*.ts',

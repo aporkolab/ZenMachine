@@ -47,10 +47,21 @@ describe('AudioService', () => {
       pan: { value: 0 }
     });
 
-    (globalThis as any).AudioContext = jasmine.createSpy('AudioContext').and.returnValue(mockAudioContext);
-    (globalThis as any).BiquadFilterNode = mockBiquadFilterNode;
-    (globalThis as any).StereoPannerNode = mockStereoPannerNode;
-    (globalThis as any).Audio = jasmine.createSpy('Audio').and.returnValue({
+    (globalThis as typeof globalThis & {
+      AudioContext?: typeof AudioContext;
+      BiquadFilterNode?: typeof BiquadFilterNode;
+      StereoPannerNode?: typeof StereoPannerNode;
+      Audio?: typeof Audio;
+    }).AudioContext = jasmine.createSpy('AudioContext').and.returnValue(mockAudioContext);
+    (globalThis as typeof globalThis & {
+      BiquadFilterNode?: typeof BiquadFilterNode;
+    }).BiquadFilterNode = mockBiquadFilterNode;
+    (globalThis as typeof globalThis & {
+      StereoPannerNode?: typeof StereoPannerNode;
+    }).StereoPannerNode = mockStereoPannerNode;
+    (globalThis as typeof globalThis & {
+      Audio?: typeof Audio;
+    }).Audio = jasmine.createSpy('Audio').and.returnValue({
       load: jasmine.createSpy('load')
     });
 
@@ -68,11 +79,11 @@ describe('AudioService', () => {
 
   it('should have an audio context after init', () => {
     service.init();
-    expect((service as any).ctx).toBeDefined();
+    expect((service as AudioService & { ctx?: AudioContext }).ctx).toBeDefined();
   });
 
   it('should have a master gain node after init', () => {
     service.init();
-    expect((service as any).masterGainNode).toBeDefined();
+    expect((service as AudioService & { masterGainNode?: GainNode }).masterGainNode).toBeDefined();
   });
 });

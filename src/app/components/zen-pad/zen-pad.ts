@@ -42,7 +42,7 @@ import { VisualizerComponent } from '../visualizer/visualizer';
     ]),
   ],
 })
-export class ZenPad implements OnInit {
+export class ZenPadComponent implements OnInit {
   public audioService = inject(AudioService);
   private apiService = inject(ApiService);
   public readonly isBrowser = isPlatformBrowser(inject(PLATFORM_ID));
@@ -175,7 +175,10 @@ export class ZenPad implements OnInit {
     };
     try {
       localStorage.setItem('audioSettings', JSON.stringify(settings));
-    } catch {}
+    } catch (error) {
+      // localStorage may be unavailable (private browsing, etc.)
+      console.debug('Failed to save settings:', error);
+    }
   }
 
   loadSettings() {
@@ -191,7 +194,10 @@ export class ZenPad implements OnInit {
         this.playbackRate = settings.playbackRate ?? 1;
         this.audioService.setPlaybackRate(this.playbackRate);
       }
-    } catch {}
+    } catch (error) {
+      // localStorage may be unavailable or contain invalid JSON
+      console.debug('Failed to load settings:', error);
+    }
   }
 
   randomizeSettings() {

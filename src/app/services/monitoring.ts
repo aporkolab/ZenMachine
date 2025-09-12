@@ -25,7 +25,7 @@ export interface PerformanceMetric {
 
 export interface UserAnalytics {
   event: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   userId?: string;
   sessionId: string;
   timestamp: Date;
@@ -134,8 +134,12 @@ export class MonitoringService {
       let clsValue = 0;
       new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          if (!(entry as any).hadRecentInput) {
-            clsValue += (entry as any).value;
+          const layoutShift = entry as PerformanceEntry & {
+            hadRecentInput?: boolean;
+            value: number;
+          };
+          if (!layoutShift.hadRecentInput) {
+            clsValue += layoutShift.value;
           }
         }
         this.trackMetric('cumulative_layout_shift', clsValue);
@@ -176,7 +180,7 @@ export class MonitoringService {
     this.metricsQueue.push(metric);
   }
 
-  trackEvent(event: string, properties: Record<string, any> = {}) {
+  trackEvent(event: string, properties: Record<string, unknown> = {}) {
     const analytics: UserAnalytics = {
       event,
       properties,
@@ -252,7 +256,7 @@ export class MonitoringService {
     }
   }
 
-  private async sendToMonitoringService(endpoint: string, data: any[]) {
+  private async sendToMonitoringService(endpoint: string, data: unknown[]) {
     // In a real implementation, you would send to your actual monitoring service
     console.log(`Sending ${data.length} items to ${endpoint}:`, data);
     
@@ -298,7 +302,7 @@ export class MonitoringService {
 export class GlobalErrorHandler implements ErrorHandler {
   private monitoringService = inject(MonitoringService);
 
-  handleError(error: any): void {
+  handleError(error: Error): void {
     console.error('Global error:', error);
     
     this.monitoringService.logError({

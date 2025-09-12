@@ -1,29 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ZenPad } from './zen-pad';
+import { ZenPadComponent } from './zen-pad';
 import { AudioService } from '../../services/audio';
-import { ApiService } from '../../services/api';
-import { PresetService } from '../../services/preset';
 
-describe('ZenPad', () => {
-  let component: ZenPad;
-  let fixture: ComponentFixture<ZenPad>;
+describe('ZenPadComponent', () => {
+  let component: ZenPadComponent;
+  let fixture: ComponentFixture<ZenPadComponent>;
   let audioService: AudioService;
-  let apiService: ApiService;
-  let presetService: PresetService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ZenPad, NoopAnimationsModule, HttpClientTestingModule]
+      imports: [ZenPadComponent, NoopAnimationsModule, HttpClientTestingModule]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(ZenPad);
+    fixture = TestBed.createComponent(ZenPadComponent);
     component = fixture.componentInstance;
     audioService = TestBed.inject(AudioService);
-    apiService = TestBed.inject(ApiService);
-    presetService = TestBed.inject(PresetService);
     fixture.detectChanges();
   });
 

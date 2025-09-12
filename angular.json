@@ -78,7 +78,9 @@
         "test": {
           "builder": "@angular/build:karma",
           "options": {
-            "polyfills": ["src/polyfills.ts"],
+            "polyfills": [
+              "src/polyfills.ts"
+            ],
             "tsConfig": "tsconfig.spec.json",
             "inlineStyleLanguage": "scss",
             "assets": [
@@ -92,11 +94,23 @@
               "src/styles.scss"
             ]
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
+          }
         }
       }
     }
   },
   "cli": {
-    "analytics": "e517f03e-99a9-4e72-957d-c7c5f2631206"
+    "analytics": "e517f03e-99a9-4e72-957d-c7c5f2631206",
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }

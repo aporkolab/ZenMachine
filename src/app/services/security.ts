@@ -17,7 +17,7 @@ export interface SecurityViolation {
   type: 'csp' | 'xss' | 'input' | 'integrity' | 'suspicious-activity';
   severity: 'low' | 'medium' | 'high' | 'critical';
   message: string;
-  data?: any;
+  data?: Record<string, unknown>;
   timestamp: Date;
   userAgent: string;
   url: string;
@@ -82,15 +82,16 @@ export class SecurityService {
 
     // Monitor for script injections
     const originalAppendChild = Node.prototype.appendChild;
-    const securityService = this;
+    const checkAllowedSource = this.isAllowedSource.bind(this);
+    const reportViolation = this.reportSecurityViolation.bind(this);
     
     Node.prototype.appendChild = function <T extends Node>(this: Node, node: T): T {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as unknown as Element;
         if (element.tagName === 'SCRIPT') {
           const src = element.getAttribute('src');
-          if (src && !securityService.isAllowedSource(src)) {
-            securityService.reportSecurityViolation({
+          if (src && !checkAllowedSource(src)) {
+            reportViolation({
               type: 'integrity',
               severity: 'high',
               message: `Suspicious script injection attempt: ${src}`,
@@ -108,7 +109,6 @@ export class SecurityService {
 
   private setupSuspiciousActivityDetection() {
     let consecutiveFailures = 0;
-    let rapidRequests = 0;
     const requestTimeWindow = 60000; // 1 minute
     let requestTimes: number[] = [];
 

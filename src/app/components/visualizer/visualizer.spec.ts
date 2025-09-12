@@ -24,7 +24,7 @@ describe('VisualizerComponent', () => {
       })
     };
     
-    mockAudioService.getAnalyser.and.returnValue(mockAnalyser as any);
+    mockAudioService.getAnalyser.and.returnValue(mockAnalyser as AnalyserNode);
 
     await TestBed.configureTestingModule({
       imports: [VisualizerComponent],

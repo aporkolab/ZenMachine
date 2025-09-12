@@ -1,6 +1,5 @@
 // This file is required by karma.conf.js and loads recursively all the .spec and framework files
 
-import 'zone.js';  // Included with Angular CLI.
 import 'zone.js/testing';
 import { getTestBed } from '@angular/core/testing';
 import {
@@ -22,7 +21,15 @@ getTestBed().initTestEnvironment(
 );
 
 // Mock Web Audio API for testing
-(window as any).AudioContext = (window as any).AudioContext || (window as any).webkitAudioContext || class {
+(window as typeof window & {
+  AudioContext?: typeof AudioContext;
+  webkitAudioContext?: typeof AudioContext;
+}).AudioContext = (window as typeof window & {
+  AudioContext?: typeof AudioContext;
+  webkitAudioContext?: typeof AudioContext;
+}).AudioContext || (window as typeof window & {
+  webkitAudioContext?: typeof AudioContext;
+}).webkitAudioContext || class {
   createGain() {
     return {
       connect: () => ({ connect: () => {} }),
@@ -77,24 +84,49 @@ getTestBed().initTestEnvironment(
 };
 
 // Mock PerformanceObserver
-(window as any).PerformanceObserver = class {
-  constructor(callback: any) {}
+(window as typeof window & {
+  PerformanceObserver?: typeof PerformanceObserver;
+}).PerformanceObserver = class {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  constructor(_callback: PerformanceObserverCallback) {
+    // Mock constructor - callback parameter required by interface but not used
+  }
   observe() {}
   disconnect() {}
 };
 
 // Mock performance.mark and measure
 if (!window.performance.mark) {
-  (window.performance as any).mark = () => {};
+  (window.performance as Performance & {
+    mark?: (markName: string) => void;
+  }).mark = () => {};
 }
 if (!window.performance.measure) {
-  (window.performance as any).measure = () => {};
+  (window.performance as Performance & {
+    measure?: (measureName: string, startMark?: string, endMark?: string) => void;
+  }).measure = () => {};
 }
 if (!window.performance.getEntriesByName) {
-  (window.performance as any).getEntriesByName = () => [{ duration: 100, entryType: 'measure', name: 'test', startTime: 0, toJSON: () => ({}) }];
+  (window.performance as Performance & {
+    getEntriesByName?: (name: string) => PerformanceEntry[];
+  }).getEntriesByName = () => [{
+    duration: 100,
+    entryType: 'measure',
+    name: 'test',
+    startTime: 0,
+    toJSON: () => ({})
+  } as PerformanceEntry];
 }
 if (!window.performance.getEntriesByType) {
-  (window.performance as any).getEntriesByType = () => [{ startTime: 100, name: 'first-contentful-paint', duration: 100, entryType: 'paint', toJSON: () => ({}) }];
+  (window.performance as Performance & {
+    getEntriesByType?: (type: string) => PerformanceEntry[];
+  }).getEntriesByType = () => [{
+    startTime: 100,
+    name: 'first-contentful-paint',
+    duration: 100,
+    entryType: 'paint',
+    toJSON: () => ({})
+  } as PerformanceEntry];
 }
 
 // Then we find all the tests.

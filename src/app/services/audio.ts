@@ -30,8 +30,8 @@ export class AudioService {
     { source: AudioBufferSourceNode; gain: GainNode; name: string; path: string }
   >();
 
-  private timerTimeout: any;
-  private alarmInterval: any;
+  private timerTimeout: ReturnType<typeof setTimeout> | null = null;
+  private alarmInterval: ReturnType<typeof setInterval> | null = null;
   private isLooping = false;
   private soundCounter = 0;
   private canResume = false; // csak user-gesztus után igaz
@@ -61,7 +61,10 @@ export class AudioService {
   init(): void {
     if (!this.isBrowser || this.ctx) return;
 
-    const g = globalThis as any;
+    const g = globalThis as typeof globalThis & {
+      AudioContext?: typeof AudioContext;
+      webkitAudioContext?: typeof AudioContext;
+    };
     const AC: typeof AudioContext | undefined = g.AudioContext || g.webkitAudioContext;
     if (!AC) return;
 
@@ -152,10 +155,16 @@ export class AudioService {
     if (sound) {
       try {
         sound.source.stop();
-      } catch {}
+      } catch (error) {
+        // AudioBufferSourceNode may already be stopped
+        console.debug('Sound already stopped:', error);
+      }
       try {
         sound.source.disconnect();
-      } catch {}
+      } catch (error) {
+        // AudioNode may already be disconnected
+        console.debug('Sound already disconnected:', error);
+      }
       this.sounds.delete(id);
       this.updateActiveSounds();
     }
@@ -234,14 +243,20 @@ export class AudioService {
   }
 
   setTimer(minutes: number) {
-    if (this.timerTimeout) clearTimeout(this.timerTimeout);
+    if (this.timerTimeout) {
+      clearTimeout(this.timerTimeout);
+      this.timerTimeout = null;
+    }
     const duration = minutes * 60 * 1000;
     this.timerTimeout = setTimeout(() => this.stopAllSounds(), duration);
   }
 
   setAlarm(time: string) {
     if (!this.isBrowser) return;
-    if (this.alarmInterval) clearInterval(this.alarmInterval);
+    if (this.alarmInterval) {
+      clearInterval(this.alarmInterval);
+      this.alarmInterval = null;
+    }
 
     const [hh, mm] = time.split(':').map(Number);
     const alarmTime = new Date();
@@ -250,8 +265,13 @@ export class AudioService {
 
     this.alarmInterval = setInterval(() => {
       if (new Date() >= alarmTime) {
-        this.alarmAudio?.play().catch(() => {});
-        clearInterval(this.alarmInterval);
+        this.alarmAudio?.play().catch((error) => {
+          console.debug('Failed to play alarm:', error);
+        });
+        if (this.alarmInterval) {
+          clearInterval(this.alarmInterval);
+          this.alarmInterval = null;
+        }
       }
     }, 1000);
   }
