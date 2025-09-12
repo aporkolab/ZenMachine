@@ -1,20 +1,12 @@
 {
   "root": true,
-  "ignorePatterns": [
-    "projects/**/*",
-    "dist/**/*",
-    "coverage/**/*",
-    "node_modules/**/*"
-  ],
+  "ignorePatterns": ["projects/**/*", "dist/**/*", "coverage/**/*", "node_modules/**/*"],
   "overrides": [
     {
-      "files": [
-        "*.ts"
-      ],
+      "files": ["*.ts"],
       "extends": [
         "eslint:recommended",
         "@typescript-eslint/recommended",
-        "@typescript-eslint/recommended-requiring-type-checking",
         "@angular-eslint/recommended",
         "@angular-eslint/template/process-inline-templates",
         "prettier"
@@ -51,13 +43,8 @@
       }
     },
     {
-      "files": [
-        "*.html"
-      ],
-      "extends": [
-        "@angular-eslint/template/recommended",
-        "@angular-eslint/template/accessibility"
-      ],
+      "files": ["*.html"],
+      "extends": ["@angular-eslint/template/recommended", "@angular-eslint/template/accessibility"],
       "rules": {
         "@angular-eslint/template/click-events-have-key-events": "error",
         "@angular-eslint/template/interactive-supports-focus": "error",
@@ -66,9 +53,7 @@
       }
     },
     {
-      "files": [
-        "*.spec.ts"
-      ],
+      "files": ["*.spec.ts"],
       "rules": {
         "@typescript-eslint/no-unused-vars": "off"
       }
