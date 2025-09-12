@@ -1,0 +1,100 @@
+version: '3.8'
+
+services:
+  # Development environment
+  zenmachine-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+      target: development
+    container_name: zenmachine-dev
+    ports:
+      - "4200:4200"
+      - "49153:49153" # HMR port
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+    command: npm run start
+    networks:
+      - zenmachine-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:4200"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Production environment
+  zenmachine-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: zenmachine-prod
+    ports:
+      - "80:8080"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - zenmachine-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.zenmachine.rule=Host(`zenmachine.local`)"
+
+  # Redis for caching (optional)
+  redis:
+    image: redis:7-alpine
+    container_name: zenmachine-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - zenmachine-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Reverse proxy (Traefik)
+  traefik:
+    image: traefik:v3.0
+    container_name: zenmachine-traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=your-email@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080" # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - letsencrypt:/letsencrypt
+    networks:
+      - zenmachine-network
+    restart: unless-stopped
+
+volumes:
+  redis_data:
+  letsencrypt:
+
+networks:
+  zenmachine-network:
+    driver: bridge

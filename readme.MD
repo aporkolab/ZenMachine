@@ -1,52 +1,103 @@
-# Zen Machine (Angular Edition)
+# 🧘 Zen Machine - Enterprise Audio Relaxation Platform
 
 <p align="center">
-  <a href="https://angular.dev/"><img height="20" src="https://img.shields.io/badge/built_with-Angular-dd0031.svg?logo=angular" alt="Built with Angular"></a>
-  <a href="https://www.typescriptlang.org/"><img height="20" src="https://img.shields.io/badge/built_with-TypeScript-3178c6.svg?logo=typescript" alt="Built with TypeScript"></a>
+  <a href="https://angular.dev/"><img height="20" src="https://img.shields.io/badge/built_with-Angular_20-dd0031.svg?logo=angular" alt="Built with Angular"></a>
+  <a href="https://www.typescriptlang.org/"><img height="20" src="https://img.shields.io/badge/built_with-TypeScript_5.9-3178c6.svg?logo=typescript" alt="Built with TypeScript"></a>
   <a href="https://material.angular.io/"><img height="20" src="https://img.shields.io/badge/built_with-Angular_Material-ff4081.svg?logo=angular" alt="Built with Angular Material"></a>
-  <a href="https://code.visualstudio.com/"><img height="20" src="https://img.shields.io/badge/developed_in-VS_Code-007acc.svg?logo=visual-studio-code" alt="Developed in VS Code"></a>
-  <a href="./LICENSE"><img height="20" src="https://img.shields.io/badge/license-Creative_Commons-blue.svg?logo=creative-commons" alt="License"></a>
+  <a href="https://docker.com/"><img height="20" src="https://img.shields.io/badge/containerized-Docker-2496ed.svg?logo=docker" alt="Docker"></a>
+  <a href="https://github.com/features/actions"><img height="20" src="https://img.shields.io/badge/CI%2FCD-GitHub_Actions-2088ff.svg?logo=github-actions" alt="GitHub Actions"></a>
+  <a href="https://www.sonarcloud.io/"><img height="20" src="https://img.shields.io/badge/quality-SonarCloud-f3702a.svg?logo=sonarcloud" alt="SonarCloud"></a>
+  <a href="https://playwright.dev/"><img height="20" src="https://img.shields.io/badge/testing-Playwright-45ba4b.svg?logo=playwright" alt="Playwright"></a>
+  <a href="./LICENSE"><img height="20" src="https://img.shields.io/badge/license-CC_BY--NC--SA_4.0-blue.svg?logo=creative-commons" alt="License"></a>
 </p>
 
-Zen Machine is an advanced web-based audio relaxation tool, rebuilt from the ground up with Angular for a more robust, scalable, and modern experience. It allows users to craft their own serene environment by combining a variety of sounds and tunes. With a plethora of features, Zen Machine aims to provide a comprehensive and customizable audio experience.
+**Zen Machine** is an enterprise-grade, web-based audio relaxation platform built with modern Angular architecture. This application demonstrates senior+++ level software engineering practices including comprehensive CI/CD pipelines, automated testing, security hardening, performance optimization, and monitoring.
 
-This project was refactored to a senior-level application by the original author of this project is [Adam Dr. Porkolab (APorkolab)](https://www.adamporkolab.hu).
+## 🎯 Project Overview
 
-## 🌟 Features
+Zen Machine transforms the way users create personalized audio environments through:
+- **Advanced Web Audio API** integration for professional-grade audio processing
+- **Real-time Visualization** with interactive audio analysis
+- **Cloud Integration** with external APIs for dynamic content
+- **Enterprise Security** with CSP, XSS protection, and threat monitoring
+- **Production-Ready Infrastructure** with Docker, monitoring, and observability
 
-### Sound Selection
-- Choose from a library of ambient sounds.
-- Add random ambient tracks from the Jamendo API.
-- Combine multiple sounds to create a unique mix.
+**Author**: [Adam Dr. Porkolab (APorkolab)](https://www.adamporkolab.hu)
+**Architecture Level**: Senior+++ Enterprise Application
 
-### Audio Controls
-- **Master Volume Control**: Adjust the master volume for the entire mix.
-- **Balance Control**: Adjust the stereo balance to focus sound on the left or right speaker.
-- **Equalizer**: Fine-tune your audio with a 3-band equalizer (bass, mid, treble).
-- **Playback Rate**: Adjust the speed of playback for all sounds.
+## 🚀 Enterprise Features
 
-### Playback Features
-- **Loop**: Set your favorite sounds to loop indefinitely.
-- **Stop All**: A single button to stop all currently playing sounds.
+### 🎵 Advanced Audio Engine
+- **Professional Web Audio API** processing with real-time effects
+- **3-Band Equalizer** (Bass, Mid, Treble) with precise frequency control
+- **Stereo Panning** for immersive spatial audio experience
+- **Dynamic Playback Rate** adjustment with buffer management
+- **Loop Control** with seamless audio transitions
+- **Master Volume Control** with gain staging
 
-### User Experience
-- **Dark Mode**: Toggle between light and dark themes for comfortable viewing.
-- **Random Backgrounds**: Get a random image from Picsum Photos to set the mood.
-- **Responsive Design**: Optimized for a great experience on desktop and mobile devices.
+### 📊 Real-time Analytics & Monitoring
+- **Audio Visualization** with FFT analysis and waveform display
+- **Performance Metrics** tracking with Web Vitals integration
+- **Error Monitoring** with automatic reporting and alerting
+- **User Analytics** with event tracking and behavioral analysis
+- **Security Monitoring** with threat detection and CSP reporting
 
-### Additional Features
-- **Save and Load Settings**: Save your favorite equalizer, pan, and volume settings and load them anytime.
-- **Timer**: Set a timer to stop the playback after a certain duration.
-- **Alarm**: Set an alarm to play a sound at a specific time.
-- **Randomize**: Randomly adjust audio settings or add a new random sound for a surprise experience.
+### 🔒 Enterprise Security
+- **Content Security Policy** (CSP) with violation reporting
+- **XSS Protection** with input sanitization and validation
+- **Rate Limiting** to prevent abuse and DDoS attacks
+- **Security Headers** (HSTS, X-Frame-Options, etc.)
+- **Integrity Monitoring** for script injection detection
 
-## 📦 Tech Stack
-- **Angular**: A powerful framework for building modern web applications.
-- **TypeScript**: For type-safe and scalable code.
-- **Angular Material**: For a high-quality and consistent UI.
-- **Web Audio API**: For advanced audio controls and effects.
-- **Jamendo API**: For fetching random ambient tracks.
-- **Picsum Photos API**: For random background images.
+### 🌍 Cloud Integration
+- **Jamendo API** integration for dynamic music streaming
+- **Picsum Photos API** for randomized background imagery
+- **CDN Support** for optimized asset delivery
+- **External API Security** with domain whitelisting
+
+### 📱 Modern UX/UI
+- **Material Design 3** with custom theming
+- **Dark Mode** with system preference detection
+- **Responsive Design** optimized for all devices
+- **Progressive Web App** (PWA) capabilities
+- **Accessibility** (a11y) compliant with WCAG guidelines
+
+### ⚙️ Data Management
+- **LocalStorage Integration** for settings persistence
+- **State Management** with RxJS observables
+- **Preset Management** for user configurations
+- **Import/Export** functionality for user data
+
+## 🏢 Enterprise Architecture
+
+### Frontend Stack
+- **Angular 20** - Modern component-based architecture
+- **TypeScript 5.9** - Type-safe development with strict mode
+- **Angular Material 20** - Enterprise UI component library
+- **RxJS 7.8** - Reactive programming and state management
+- **Web Audio API** - Professional audio processing
+
+### Development & DevOps
+- **Docker** - Containerized deployment with multi-stage builds
+- **GitHub Actions** - Comprehensive CI/CD pipeline
+- **ESLint + Prettier** - Code quality and formatting
+- **Husky** - Git hooks for automated checks
+- **SonarCloud** - Static code analysis and quality gates
+
+### Testing Strategy
+- **Unit Tests** - Jasmine + Karma for component testing
+- **Integration Tests** - Jest for service integration
+- **E2E Tests** - Playwright for cross-browser testing
+- **Performance Tests** - Lighthouse CI for optimization
+- **Load Tests** - K6 for scalability testing
+- **Security Tests** - Automated vulnerability scanning
+
+### Monitoring & Observability
+- **Error Tracking** - Real-time error monitoring and alerting
+- **Performance Monitoring** - Core Web Vitals and custom metrics
+- **User Analytics** - Behavioral tracking and insights
+- **Security Monitoring** - Threat detection and reporting
+- **Logging** - Structured logging with correlation IDs
 
 ## 🚀 Getting Started
 

@@ -1,0 +1,22 @@
+{
+  "levels": {
+    "low": false,
+    "moderate": false,
+    "high": true,
+    "critical": true
+  },
+  "report-type": "full",
+  "advisories": [],
+  "allowlist": [],
+  "registry": "https://registry.npmjs.org/",
+  "output-format": "json",
+  "pass-enoaudit": true,
+  "show-found": true,
+  "show-not-found": false,
+  "retry": {
+    "count": 5,
+    "factor": 2,
+    "maxTimeout": 60000,
+    "minTimeout": 1000
+  }
+}
