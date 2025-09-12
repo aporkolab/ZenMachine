@@ -3,7 +3,7 @@ const { compilerOptions } = require('./tsconfig.json');
 
 module.exports = {
   preset: 'jest-preset-angular',
-  setupFilesAfterEnv: ['<rootDir>/src/setup-jest.ts'],
+  setupFilesAfterEnv: ['<rootDir>/setup-jest.ts'],
   globalSetup: 'jest-preset-angular/global-setup',
   testEnvironment: 'jsdom',
   transform: {

@@ -82,13 +82,15 @@ export class SecurityService {
 
     // Monitor for script injections
     const originalAppendChild = Node.prototype.appendChild;
-    Node.prototype.appendChild = function <T extends Node>(node: T): T {
+    const securityService = this;
+    
+    Node.prototype.appendChild = function <T extends Node>(this: Node, node: T): T {
       if (node.nodeType === Node.ELEMENT_NODE) {
         const element = node as unknown as Element;
         if (element.tagName === 'SCRIPT') {
           const src = element.getAttribute('src');
-          if (src && !this.isAllowedSource(src)) {
-            this.reportSecurityViolation({
+          if (src && !securityService.isAllowedSource(src)) {
+            securityService.reportSecurityViolation({
               type: 'integrity',
               severity: 'high',
               message: `Suspicious script injection attempt: ${src}`,
@@ -100,8 +102,8 @@ export class SecurityService {
           }
         }
       }
-      return originalAppendChild.call(this, node);
-    }.bind(this);
+      return originalAppendChild.call(this, node) as T;
+    };
   }
 
   private setupSuspiciousActivityDetection() {

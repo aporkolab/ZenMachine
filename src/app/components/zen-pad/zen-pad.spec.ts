@@ -35,17 +35,17 @@ describe('ZenPad', () => {
     const loadSoundSpy = spyOn(audioService, 'loadSound').and.returnValue(Promise.resolve({} as AudioBuffer));
     const playSoundSpy = spyOn(audioService, 'playSound');
 
-    component.selectedSoundPath = '/sounds/heavy-rain.mp3';
+    component.selectedSoundPath = 'assets/sounds/heavy-rain.mp3';
     await component.addSound();
 
-    expect(loadSoundSpy).toHaveBeenCalledWith('/sounds/heavy-rain.mp3');
+    expect(loadSoundSpy).toHaveBeenCalledWith('assets/sounds/heavy-rain.mp3');
     expect(playSoundSpy).toHaveBeenCalled();
   });
 
 
   it('should set the background image when changeBackground is called with a path', () => {
-    component.selectedBackground = '/assets/image/beach.jpg';
+    component.selectedBackground = 'assets/image/beach.jpg';
     component.changeBackground();
-    expect(document.body.style.backgroundImage).toBe('url("/assets/image/beach.jpg")');
+    expect(document.body.style.backgroundImage).toBe('url("assets/image/beach.jpg")');
   });
 });
