@@ -63,7 +63,7 @@ jobs:
         run: npm run type-check
       
       - name: SonarCloud Scan
-        if: ${{ secrets.SONAR_TOKEN }}
+        if: ${{ secrets.SONAR_TOKEN != '' }}
         uses: SonarSource/sonarqube-scan-action@v5.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -71,7 +71,7 @@ jobs:
         continue-on-error: true
       
       - name: Skip SonarCloud (no token)
-        if: ${{ !secrets.SONAR_TOKEN }}
+        if: ${{ secrets.SONAR_TOKEN == '' }}
         run: echo "⚠️ SonarCloud scan skipped - SONAR_TOKEN not configured"
 
   test:
