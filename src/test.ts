@@ -94,6 +94,7 @@ getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDyn
   };
 
 // Mock PerformanceObserver
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).PerformanceObserver = class {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   constructor(_callback: PerformanceObserverCallback) {
@@ -108,9 +109,11 @@ getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDyn
 
 // Mock performance.mark and measure
 if (!window.performance.mark) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window.performance as any).mark = () => {};
 }
 if (!window.performance.measure) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (window.performance as any).measure = () => {};
 }
 if (!window.performance.getEntriesByName) {

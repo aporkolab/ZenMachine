@@ -47,9 +47,13 @@ describe('AudioService', () => {
       pan: { value: 0 },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).AudioContext = jasmine.createSpy('AudioContext').and.returnValue(mockAudioContext);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).BiquadFilterNode = mockBiquadFilterNode;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).StereoPannerNode = mockStereoPannerNode;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).Audio = jasmine.createSpy('Audio').and.returnValue({
       load: jasmine.createSpy('load'),
     });
@@ -66,11 +70,13 @@ describe('AudioService', () => {
 
   it('should have an audio context after init', () => {
     service.init();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((service as any).ctx).toBeDefined();
   });
 
   it('should have a master gain node after init', () => {
     service.init();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((service as any).masterGainNode).toBeDefined();
   });
 });
