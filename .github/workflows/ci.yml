@@ -127,7 +127,7 @@ jobs:
         run: npm ci --legacy-peer-deps
       
       - name: Build application
-        run: npm run build
+        run: npx ng build --configuration client-only
       
       - name: Run build analysis
         run: npm run analyze

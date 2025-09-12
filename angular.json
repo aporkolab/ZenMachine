@@ -56,6 +56,18 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "client-only": {
+              "outputMode": "static",
+              "server": false,
+              "ssr": false,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "1MB",
+                  "maximumError": "2MB"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
