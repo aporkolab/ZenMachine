@@ -48,7 +48,9 @@ describe('AudioService', () => {
     });
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (globalThis as any).AudioContext = jasmine.createSpy('AudioContext').and.returnValue(mockAudioContext);
+    (globalThis as any).AudioContext = jasmine
+      .createSpy('AudioContext')
+      .and.returnValue(mockAudioContext);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).BiquadFilterNode = mockBiquadFilterNode;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
