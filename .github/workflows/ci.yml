@@ -104,7 +104,11 @@ jobs:
         if: matrix.test-type == 'e2e'
         run: |
           npm run build
+          npx playwright install --with-deps chromium
+          npx serve -s dist/zenmachine -l 4200 &
+          sleep 5
           npm run e2e:headless
+          kill %1
       
       - name: Upload coverage to Codecov
         if: matrix.test-type == 'unit'

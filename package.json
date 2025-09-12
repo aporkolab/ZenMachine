@@ -13,7 +13,7 @@
     "test:unit:watch": "ng test --watch=true",
     "test:integration": "jest --config jest.integration.config.js",
     "test:e2e": "npx playwright test",
-    "e2e:headless": "npx playwright test --headed=false",
+    "e2e:headless": "npx playwright test",
     "test:coverage": "ng test --code-coverage --watch=false",
     "test:smoke": "jest --config jest.smoke.config.js",
     "test:load": "k6 run tests/load/load-test.js",
@@ -102,6 +102,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "lint-staged": "^15.0.0",
     "prettier": "^3.0.0",
+    "serve": "^14.2.5",
     "ts-jest": "^29.1.0",
     "typescript": "~5.9.2",
     "webpack-bundle-analyzer": "^4.9.0"
