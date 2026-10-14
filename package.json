@@ -70,10 +70,10 @@
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "18.4.3",
+    "@angular-eslint/builder": "22.6.0",
     "@angular-eslint/eslint-plugin": "18.4.3",
     "@angular-eslint/eslint-plugin-template": "18.4.3",
-    "@angular-eslint/schematics": "18.4.3",
+    "@angular-eslint/schematics": "22.6.0",
     "@angular-eslint/template-parser": "18.4.3",
     "@angular/build": "20.3.39",
     "@angular/cli": "20.3.39",
