@@ -1,5 +1,5 @@
 # Development Dockerfile with hot reload
-FROM node:20.11-alpine AS development
+FROM node:24-alpine AS development
 
 # Set working directory
 WORKDIR /app

@@ -49,14 +49,14 @@ check_node() {
     
     if ! command -v node &> /dev/null; then
         print_error "Node.js is not installed!"
-        print_warning "Please install Node.js 20.11+ from https://nodejs.org"
+        print_warning "Please install Node.js 24.15+ from https://nodejs.org"
         return 1
     fi
     
     NODE_VERSION=$(node --version | cut -d'v' -f2)
-    REQUIRED_VERSION="20.11.0"
+    REQUIRED_VERSION="24.15.0"
     
-    if [ "$(printf '%s\n' "$REQUIRED_VERSION" "$NODE_VERSION" | sort -V | head -n1)" = "$REQUIRED_VERSION" ]; then
+    if [ "${NODE_VERSION%%.*}" = "24" ] && [ "$(printf '%s\n' "$REQUIRED_VERSION" "$NODE_VERSION" | sort -V | head -n1)" = "$REQUIRED_VERSION" ]; then
         print_success "Node.js version $NODE_VERSION is compatible"
     else
         print_error "Node.js version $NODE_VERSION is too old. Required: $REQUIRED_VERSION+"
