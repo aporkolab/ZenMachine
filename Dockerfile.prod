@@ -2,8 +2,8 @@
 # Multi-stage production build
 # ================================
 
-# Stage 1: Build environment
-FROM node:24-alpine AS builder
+# Angular produces platform-independent files; run Node on the native builder.
+FROM --platform=$BUILDPLATFORM node:24-alpine AS builder
 
 # Set working directory
 WORKDIR /app
