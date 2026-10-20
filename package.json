@@ -23,9 +23,10 @@
     "prettier": "prettier --write \"src/**/*.{ts,js,html,scss,css,json}\"",
     "prettier:check": "prettier --check \"src/**/*.{ts,js,html,scss,css,json}\"",
     "type-check": "tsc --noEmit",
-    "analyze": "ng build --configuration production --stats-json && npx webpack-bundle-analyzer dist/zenmachine/stats.json",
+    "analyze": "ng build --configuration client-only --stats-json",
     "prepare": "husky install",
-    "serve:ssr:zenmachine": "node dist/zenmachine/server/server.mjs"
+    "serve:ssr:zenmachine": "node dist/zenmachine/server/server.mjs",
+    "test:dependency-guards": "node --test vendor/braces/test.cjs"
   },
   "prettier": {
     "printWidth": 100,
@@ -70,11 +71,11 @@
     "zone.js": "^0.15.1"
   },
   "devDependencies": {
-    "@angular-eslint/builder": "18.4.3",
-    "@angular-eslint/eslint-plugin": "18.4.3",
-    "@angular-eslint/eslint-plugin-template": "18.4.3",
-    "@angular-eslint/schematics": "18.4.3",
-    "@angular-eslint/template-parser": "18.4.3",
+    "@angular-eslint/builder": "20.2.0",
+    "@angular-eslint/eslint-plugin": "20.2.0",
+    "@angular-eslint/eslint-plugin-template": "20.2.0",
+    "@angular-eslint/schematics": "20.2.0",
+    "@angular-eslint/template-parser": "20.2.0",
     "@angular/build": "20.3.39",
     "@angular/cli": "20.3.39",
     "@angular/compiler-cli": "20.3.33",
@@ -84,8 +85,8 @@
     "@types/jasmine": "~5.1.0",
     "@types/jest": "^29.5.0",
     "@types/node": "^20.17.19",
-    "@typescript-eslint/eslint-plugin": "7.11.0",
-    "@typescript-eslint/parser": "7.11.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "audit-ci": "^6.6.1",
     "eslint": "8.57.0",
     "eslint-config-prettier": "^9.0.0",
@@ -105,9 +106,15 @@
     "serve": "^14.2.5",
     "ts-jest": "^29.1.0",
     "typescript": "~5.9.2",
-    "webpack-bundle-analyzer": "^4.9.0"
+    "webpack-bundle-analyzer": "^4.9.0",
+    "braces": "file:vendor/braces"
   },
   "engines": {
     "node": "^24.15.0"
+  },
+  "overrides": {
+    "braces": "$braces",
+    "picomatch@>=4 <5": "^4.0.4",
+    "compression": "^1.8.2"
   }
 }

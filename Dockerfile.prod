@@ -18,9 +18,11 @@ RUN apk update && apk upgrade && \
 
 # Copy package files
 COPY package*.json ./
+COPY vendor ./vendor
+ENV NG_CLI_ANALYTICS=false
 
 # Install dependencies with npm ci for faster, reliable builds
-RUN npm ci --only=production --omit=dev && \
+RUN npm ci --legacy-peer-deps && \
     npm cache clean --force
 
 # Copy source code
@@ -30,11 +32,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Runtime environment
-FROM nginx:1.25-alpine AS runtime
-
-# Create non-root user for security
-RUN addgroup -g 1001 -S nginx && \
-    adduser -S -D -H -u 1001 -h /var/cache/nginx -s /sbin/nologin -G nginx -g nginx nginx
+FROM nginx:stable-alpine AS runtime
 
 # Install security updates
 RUN apk update && apk upgrade && \
@@ -44,7 +42,7 @@ RUN apk update && apk upgrade && \
 COPY nginx.prod.conf /etc/nginx/nginx.conf
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist/zenmachine/browser /usr/share/nginx/html
 
 # Set proper permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
@@ -63,7 +61,7 @@ USER nginx
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:80/ || exit 1
+    CMD wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1
 
 # Expose port
 EXPOSE 8080
