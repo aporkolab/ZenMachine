@@ -157,9 +157,9 @@ export class ZenPadComponent implements OnInit {
     }
   }
 
-  toggleDarkMode() {
+  toggleDarkMode(checked = !this.isDarkMode) {
     if (!this.isBrowser) return;
-    this.isDarkMode = !this.isDarkMode;
+    this.isDarkMode = checked;
     document.body.classList.toggle('dark-mode', this.isDarkMode);
   }
 

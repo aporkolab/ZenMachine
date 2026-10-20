@@ -1,292 +1,157 @@
-name: 🚀 CI/CD Pipeline
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop, 'feature/*', 'hotfix/*' ]
+    branches: [main, develop, 'feature/*', 'hotfix/*']
   pull_request:
-    branches: [ main, develop ]
-  release:
-    types: [ published ]
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
   NODE_VERSION: '24'
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  NG_CLI_ANALYTICS: 'false'
 
 jobs:
-  security-audit:
-    name: 🔐 Security Audit
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-      
-      - name: Run security audit
-        run: npm audit --audit-level=high
-      
-      - name: Run vulnerability scan
-        run: npx audit-ci --config audit-ci.json
-        continue-on-error: true
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - run: npm run lint
+      - run: npm run prettier:check
+      - run: npm run type-check
+      - run: npm run test:dependency-guards
+      - run: npm audit --audit-level=high
 
-  code-quality:
-    name: 🔍 Code Quality
+  test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        suite: [unit, integration]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - if: matrix.suite == 'unit'
+        run: npm run test:unit -- --browsers=ChromeHeadless
+      - if: matrix.suite == 'integration'
+        run: npm run test:integration
+      - uses: actions/upload-artifact@v4
+        if: matrix.suite == 'unit'
+        with:
+          name: coverage
+          path: coverage/
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - run: npm run build
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e -- --project=chromium
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-results
+          path: |
+            playwright-report/
+            test-results/
+
+  security:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Scan source and dependencies
+        uses: aquasecurity/trivy-action@master
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-      
-      - name: Lint code
-        run: npm run lint
-      
-      - name: Check formatting
-        run: npm run prettier:check
-      
-      - name: Type check
-        run: npm run type-check
-      
-      - name: SonarCloud Scan
-        if: ${{ secrets.SONAR_TOKEN != '' }}
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-results.sarif
+          severity: HIGH,CRITICAL
+          exit-code: '1'
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always() && hashFiles('trivy-results.sarif') != ''
+        with:
+          sarif_file: trivy-results.sarif
+      - name: SonarCloud
+        if: env.SONAR_TOKEN != ''
         uses: SonarSource/sonarqube-scan-action@v5.0.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        continue-on-error: true
-      
-      - name: Skip SonarCloud (no token)
-        if: ${{ secrets.SONAR_TOKEN == '' }}
-        run: echo "⚠️ SonarCloud scan skipped - SONAR_TOKEN not configured"
-
-  test:
-    name: 🧪 Test Suite
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        test-type: [unit, integration, e2e]
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Snyk
+        if: env.SNYK_TOKEN != ''
+        uses: snyk/actions/node@master
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-      
-      - name: Run unit tests
-        if: matrix.test-type == 'unit'
-        run: npm run test:unit -- --browsers=ChromeHeadless
-      
-      - name: Run integration tests
-        if: matrix.test-type == 'integration'
-        run: npm run test:integration
-      
-      - name: Run E2E tests
-        if: matrix.test-type == 'e2e'
-        run: |
-          npm run build
-          npx playwright install --with-deps chromium
-          npx serve -s dist/zenmachine -l 4200 &
-          sleep 5
-          npm run e2e:headless
-          kill %1
-      
-      - name: Upload coverage to Codecov
-        if: matrix.test-type == 'unit'
-        uses: codecov/codecov-action@v4
-        with:
-          file: ./coverage/lcov.info
-          flags: unittests
+          args: --severity-threshold=high
 
   build:
-    name: 🏗️ Build & Package
-    needs: [security-audit, code-quality, test]
+    needs: [quality, test, e2e, security]
     runs-on: ubuntu-latest
-    outputs:
-      image-digest: ${{ steps.build.outputs.digest }}
-      image-tag: ${{ steps.meta.outputs.tags }}
+    permissions:
+      contents: read
+      packages: write
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm ci --legacy-peer-deps
-      
-      - name: Build application
-        run: npx ng build --configuration client-only
-      
-      - name: Run build analysis
-        run: npm run analyze
-      
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
+          cache: npm
+      - run: npm ci --legacy-peer-deps
+      - run: npm run analyze
+      - uses: actions/upload-artifact@v4
         with:
           name: dist-files
           path: dist/
-          retention-days: 7
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Log in to Container Registry
-        uses: docker/login-action@v3
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
         with:
-          registry: ${{ env.REGISTRY }}
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Extract metadata
+      - uses: docker/metadata-action@v5
         id: meta
-        uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=ref,event=branch
             type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha,prefix={{branch}}-
-      
-      - name: Build and push Docker image
-        id: build
+            type=sha
+      - name: Build and publish container
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile.prod
-          push: true
+          file: Dockerfile.prod
+          push: ${{ github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop') }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           platforms: linux/amd64,linux/arm64
-
-  deploy-staging:
-    name: 🚢 Deploy to Staging
-    if: github.ref == 'refs/heads/develop'
-    needs: [build]
-    runs-on: ubuntu-latest
-    environment: staging
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Deploy to Staging
-        run: |
-          echo "Deploying to staging environment..."
-          # Add your staging deployment commands here
-      
-      - name: Run smoke tests
-        run: |
-          echo "Running smoke tests against staging..."
-          npm run test:smoke -- --env=staging
-      
-      - name: Notify deployment
-        uses: 8398a7/action-slack@v3
-        with:
-          status: ${{ job.status }}
-          channel: '#deployments'
-          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
-
-  deploy-production:
-    name: 🌟 Deploy to Production
-    if: github.ref == 'refs/heads/main'
-    needs: [build]
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Deploy to Production
-        run: |
-          echo "Deploying to production environment..."
-          # Add your production deployment commands here
-      
-      - name: Run smoke tests
-        run: |
-          echo "Running smoke tests against production..."
-          npm run test:smoke -- --env=production
-      
-      - name: Update deployment status
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.repos.createDeploymentStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              deployment_id: context.payload.deployment.id,
-              state: 'success',
-              environment_url: 'https://your-production-url.com'
-            });
-
-  performance-test:
-    name: ⚡ Performance Testing
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    needs: [deploy-staging]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-      
-      - name: Install dependencies
-        run: npm ci
-      
-      - name: Run Lighthouse CI
-        run: |
-          npm install -g @lhci/cli@0.12.x
-          lhci autorun
-        env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
-      
-      - name: Run load tests
-        run: npm run test:load
-
-  security-scan:
-    name: 🛡️ Security Scan
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Run Snyk to check for vulnerabilities
-        uses: snyk/actions/node@master
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-      
-      - name: Scan Docker image
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: ${{ needs.build.outputs.image-tag }}
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-      
-      - name: Upload Trivy scan results
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'

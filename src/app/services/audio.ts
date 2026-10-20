@@ -204,21 +204,21 @@ export class AudioService {
         this.bassSubject.next(value);
         if (this.isBrowser) {
           this.ensureCtx();
-          this.bassEQ && (this.bassEQ.gain.value = value);
+          if (this.bassEQ) this.bassEQ.gain.value = value;
         }
         break;
       case 'mid':
         this.midSubject.next(value);
         if (this.isBrowser) {
           this.ensureCtx();
-          this.midEQ && (this.midEQ.gain.value = value);
+          if (this.midEQ) this.midEQ.gain.value = value;
         }
         break;
       case 'treble':
         this.trebleSubject.next(value);
         if (this.isBrowser) {
           this.ensureCtx();
-          this.trebleEQ && (this.trebleEQ.gain.value = value);
+          if (this.trebleEQ) this.trebleEQ.gain.value = value;
         }
         break;
     }
